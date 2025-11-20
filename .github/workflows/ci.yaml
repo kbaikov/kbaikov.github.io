@@ -23,7 +23,10 @@ jobs:
         
       - run: uv run feeds/rss_reader.py --input feeds/feeds.txt --days 7 --output feeds/index.html
       
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./feeds/index.html
-      - uses: actions/deploy-pages@v4
+      - name: Commit and push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add feeds/index.html
+          git commit -m "Add generated HTML file" || exit 0
+          git push
