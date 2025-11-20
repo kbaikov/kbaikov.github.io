@@ -25,5 +25,5 @@ jobs:
       
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./feeds
+          path: .
       - uses: actions/deploy-pages@v4
