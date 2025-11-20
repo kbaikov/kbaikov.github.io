@@ -110,10 +110,10 @@ def generate_html_output(
 <body>
     <header>
         <nav>
-            <a href="index.html">Home</a>
-            <a href="feeds.html aria-current="page"">Feeds</a>
-            <a href="weight/index.html">Weight</a>
-            <a href="about.html">About</a>
+            <a href="/index.html">Home</a>
+            <a href="/feeds/index.html" aria-current="page">Feeds</a>
+            <a href="/weight/index.html">Weight</a>
+            <a href="/about.html">About</a>
         </nav>
         <h1>Recent RSS Articles</h1>
         <p>Generated on {datetime.now().strftime("%Y-%m-%d at %H:%M:%S")}</p>
