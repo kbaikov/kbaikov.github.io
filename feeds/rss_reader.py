@@ -9,6 +9,7 @@ Configurable RSS Feed Fetcher - Uses feedparser but not requests
 """
 
 import argparse
+import concurrent.futures
 import sys
 import time
 import urllib.error
@@ -30,7 +31,6 @@ class Article:
     title: str
     link: str
     published: datetime
-    feed: str
     feed_title: str
 
 
@@ -49,7 +49,6 @@ def log_step(func: Callable[P, T]) -> Callable[P, T]:
     return wrapper
 
 
-@log_step
 def fetch_feed_urllib(url: str, timeout: int = 10) -> feedparser.FeedParserDict | None:
     """
     Fetch feed using urllib and parse with feedparser
@@ -87,9 +86,13 @@ def get_recent_articles(feed_urls: list[str], days_back: int) -> list[Article]:
     cutoff_date = datetime.now() - timedelta(days=days_back)
     recent_articles: list[Article] = []
 
-    for url in feed_urls:
-        feed = fetch_feed_urllib(url)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        future_to_url = {
+            executor.submit(fetch_feed_urllib, url): url for url in feed_urls
+        }
+        feeds = [f.result() for f in concurrent.futures.as_completed(future_to_url)]
 
+    for feed in feeds:
         if not feed or not hasattr(feed, "entries"):
             continue
 
@@ -105,11 +108,7 @@ def get_recent_articles(feed_urls: list[str], days_back: int) -> list[Article]:
             feed_title = feed.feed.get("title", "Unknown feed")
 
             if link and article_date >= cutoff_date:
-                recent_articles.append(
-                    Article(title, link, article_date, url, feed_title)
-                )
-
-        time.sleep(0.5)  # Be polite to servers
+                recent_articles.append(Article(title, link, article_date, feed_title))
 
     return recent_articles
 
