@@ -40,9 +40,9 @@ def log_step(func: Callable[P, T]) -> Callable[P, T]:
     @wraps(func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
         """wrapper"""
-        tic = datetime.datetime.now()
+        tic = datetime.now()
         result = func(*args, **kwargs)
-        time_taken = str(datetime.datetime.now() - tic)
+        time_taken = str(datetime.now() - tic)
         print(f"Ran step: {func.__name__} took: {time_taken}")
         return result
 
