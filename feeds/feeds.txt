@@ -18,7 +18,6 @@ https://astral.sh/blog/rss.xml
 https://endler.dev/rss.xml
 https://corrode.dev/rss.xml
 https://blog.edward-li.com/index.xml
-https://oper.ru/audio.xml
 https://koaning.io/feed.xml
 https://dystroy.org/blog/atom.xml
 https://pagedout.institute/rss.xml

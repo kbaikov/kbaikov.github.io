@@ -13,10 +13,16 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from functools import wraps
+from typing import ParamSpec, TypeVar
 
 import feedparser
+
+T = TypeVar("T")
+P = ParamSpec("P")
 
 
 @dataclass
@@ -28,6 +34,22 @@ class Article:
     feed_title: str
 
 
+def log_step(func: Callable[P, T]) -> Callable[P, T]:
+    """Prints the time it took for a function to run."""
+
+    @wraps(func)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+        """wrapper"""
+        tic = datetime.datetime.now()
+        result = func(*args, **kwargs)
+        time_taken = str(datetime.datetime.now() - tic)
+        print(f"Ran step: {func.__name__} took: {time_taken}")
+        return result
+
+    return wrapper
+
+
+@log_step
 def fetch_feed_urllib(url: str, timeout: int = 10) -> feedparser.FeedParserDict | None:
     """
     Fetch feed using urllib and parse with feedparser
@@ -57,6 +79,7 @@ def fetch_feed_urllib(url: str, timeout: int = 10) -> feedparser.FeedParserDict 
         return None
 
 
+@log_step
 def get_recent_articles(feed_urls: list[str], days_back: int) -> list[Article]:
     """
     Get articles published within the specified timeframe
