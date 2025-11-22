@@ -9,7 +9,7 @@ https://snarky.ca/rss/
 https://talkpython.fm/subscribe/rss
 http://lucumr.pocoo.org/feed.atom
 https://sunshowers.io/atom.xml
-https://bitecode.substack.com/feed
+https://www.bitecode.dev/feed
 https://matklad.github.io/feed.xml
 http://this-week-in-rust.org/rss.xml
 https://www.captain-of-industry.com/blog-feed.xml
