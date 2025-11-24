@@ -21,3 +21,4 @@ https://blog.edward-li.com/index.xml
 https://koaning.io/feed.xml
 https://dystroy.org/blog/atom.xml
 https://pagedout.institute/rss.xml
+https://servo.org/blog/feed.xml
