@@ -1,5 +1,4 @@
 https://pythonbytes.fm/episodes/rss
-https://anchor.fm/s/eb6edc3c/podcast/rss
 https://mullvad.net/en/blog/feed/atom
 https://www.oglaf.com/feeds/rss/
 https://hynek.me/index.xml
@@ -22,3 +21,4 @@ https://koaning.io/feed.xml
 https://dystroy.org/blog/atom.xml
 https://pagedout.institute/rss.xml
 https://servo.org/blog/feed.xml
+https://archlinux.org/feeds/news
