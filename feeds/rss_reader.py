@@ -142,7 +142,7 @@ def generate_html_output(
         <p>Showing articles from the last {days_back} days</p>
         <p>Total articles: {len(articles)}</p>
     </header>
-    
+
     <ul class="article-list">
 """
 
@@ -169,7 +169,7 @@ def generate_html_output(
 
     html_content += """
     </ul>
-    
+
 </body>
 </html>
 """

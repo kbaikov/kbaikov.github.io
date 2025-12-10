@@ -17,9 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v7
-        
+
       - run: uv run feeds/rss_reader.py --input feeds/feeds.txt --days 7 --output feeds/index.html
-      
+
       - name: Commit and push
         run: |
           git config --local user.email "action@github.com"
