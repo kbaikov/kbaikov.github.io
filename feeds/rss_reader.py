@@ -1,6 +1,7 @@
 # /// script
 # dependencies = [
 #   "feedparser",
+#   "jinja2",
 # ]
 # ///
 
@@ -21,6 +22,7 @@ from functools import wraps
 from typing import ParamSpec, TypeVar
 
 import feedparser
+from jinja2 import Environment, FileSystemLoader
 
 T = TypeVar("T")
 P = ParamSpec("P")
@@ -43,7 +45,7 @@ def log_step(func: Callable[P, T]) -> Callable[P, T]:
         tic = datetime.now()
         result = func(*args, **kwargs)
         time_taken = str(datetime.now() - tic)
-        print(f"Ran step: {func.__name__} took: {time_taken}")
+        print(f"Ran step: {func.__name__} took: {time_taken}")  # ty:ignore[unresolved-attribute]
         return result
 
     return wrapper
@@ -119,60 +121,14 @@ def generate_html_output(
     """
     Generate HTML output with proper list tags
     """
-    html_content = f"""<!doctype html>
-<html lang="en">
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    environment = Environment(loader=FileSystemLoader("feeds/templates/"))
+    template = environment.get_template("feeds.html")
 
-    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
-    <title>Recent RSS Articles</title>
-</head>
-<body>
-    <header>
-        <nav>
-            <a href="/index.html">Home</a>
-            <a href="/feeds/index.html" aria-current="page">Feeds</a>
-            <a href="/weight/index.html">Weight</a>
-            <a href="/about.html">About</a>
-        </nav>
-        <h1>Recent RSS Articles</h1>
-        <p>Generated on {datetime.now().strftime("%Y-%m-%d at %H:%M:%S")}</p>
-        <p>Showing articles from the last {days_back} days</p>
-        <p>Total articles: {len(articles)}</p>
-    </header>
-
-    <ul class="article-list">
-"""
-
-    if not articles:
-        html_content += """
-        <div class="empty-state">
-            <h2>No articles found</h2>
-            <p>No recent articles were found in the specified timeframe.</p>
-        </div>
-"""
-    else:
-        for article in articles:
-            html_content += f"""
-        <li class="article-item">
-            <div class="article-title">
-                <a href="{article.link}" target="_blank" rel="noopener">{article.title}</a>
-            </div>
-            <div class="article-meta">
-                <span class="publish-date">{article.published}</span>
-                <span class="feed-source"> {article.feed_title}</span>
-            </div>
-        </li>
-"""
-
-    html_content += """
-    </ul>
-
-</body>
-</html>
-"""
+    html_content = template.render(
+        articles=articles,
+        date_now=datetime.now().strftime("%Y-%m-%d at %H:%M:%S"),
+        days_back=days_back,
+    )
 
     try:
         with open(output_file, "w", encoding="utf-8") as f:
@@ -210,10 +166,6 @@ def main() -> None:
     articles.sort(key=lambda a: a.published, reverse=True)
 
     generate_html_output(articles, args.output, args.days)
-
-    # print(f"Found {len(articles)} recent articles")
-    # for article in articles:
-    #     print(f"- {article.published}: {article.title}")
 
 
 if __name__ == "__main__":
