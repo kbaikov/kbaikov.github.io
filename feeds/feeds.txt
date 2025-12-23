@@ -6,7 +6,6 @@ http://www.pokerclub-lauf.de/feed
 https://devblogs.microsoft.com/python/feed/
 https://snarky.ca/rss/
 https://talkpython.fm/subscribe/rss
-http://lucumr.pocoo.org/feed.atom
 https://sunshowers.io/atom.xml
 https://www.bitecode.dev/feed
 https://matklad.github.io/feed.xml
