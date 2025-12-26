@@ -47,7 +47,7 @@ async def get_recent_articles(feed_urls: list[str], days_back: int) -> list[Arti
 
     async with aiohttp.ClientSession() as session:
         coros = [fetch_feed(url, session) for url in feed_urls]
-        results = await asyncio.gather(*coros)
+        results = await asyncio.gather(*coros, return_exceptions=True)
 
     for feed in results:
         if not feed or not feed.get("entries", ""):
