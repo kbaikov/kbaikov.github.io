@@ -23,3 +23,4 @@ https://servo.org/blog/feed.xml
 https://archlinux.org/feeds/news
 https://pythonspeed.com/atom.xml
 https://simonwillison.net/atom/entries/
+https://mmapped.blog/feed.xml
