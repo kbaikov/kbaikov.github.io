@@ -27,3 +27,4 @@ https://mmapped.blog/feed.xml
 https://gmpy.dev/feeds/atom.all.xml
 https://www.scattered-thoughts.net/atom.xml
 https://smallcultfollowing.com/babysteps//atom.xml
+https://gvanrossum.github.io/interviews/feed.xml
