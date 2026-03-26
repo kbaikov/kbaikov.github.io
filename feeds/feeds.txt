@@ -3,3 +3,4 @@ https://www.oglaf.com/feeds/rss/
 http://www.pokerclub-lauf.de/feed
 https://www.captain-of-industry.com/blog-feed.xml
 https://archlinux.org/feeds/news
+https://www.home-assistant.io/atom.xml
