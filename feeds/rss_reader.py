@@ -1,8 +1,8 @@
 # /// script
 # dependencies = [
-#   "feedparser",
-#   "jinja2",
-#   "aiohttp",
+#   "feedparser==6.0.12",
+#   "jinja2==3.1.6",
+#   "aiohttp==3.13.5",
 # ]
 # ///
 
