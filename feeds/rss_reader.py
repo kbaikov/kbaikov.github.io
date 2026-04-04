@@ -1,6 +1,6 @@
 # /// script
 # dependencies = [
-#   "feedparser==6.0.12",
+#   "feedparser-rs==0.5.1",
 #   "jinja2==3.1.6",
 #   "aiohttp==3.13.5",
 # ]
@@ -10,12 +10,11 @@
 
 import argparse
 import asyncio
-import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 import aiohttp
-import feedparser
+import feedparser_rs as feedparser
 from jinja2 import Environment, FileSystemLoader
 
 
@@ -54,13 +53,13 @@ async def get_recent_articles(feed_urls: list[str], days_back: int) -> list[Arti
             continue
 
         for entry in feed.entries:
-            # convert from a time.struct_time object into a datetime object
-            published_date = entry.get(
+            published_date_time_tuple = entry.get(
                 "published_parsed",
                 (2025, 10, 4, 0, 0, 0, 5, 277, 0),
             )
-            article_date = datetime.fromtimestamp(
-                time.mktime(published_date), tz=timezone.utc
+            # convert from a time.struct_time object into a datetime object
+            article_date = datetime(
+                *published_date_time_tuple[0:6], tzinfo=timezone.utc
             )
 
             link = entry.get("link", "")
