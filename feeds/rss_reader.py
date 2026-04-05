@@ -100,13 +100,15 @@ async def main() -> None:
 
     args = parser.parse_args()
 
-    with open(args.input, encoding="utf-8") as f:
-        feed_urls = list(f)
+    def read_input():
+        with open(args.input, encoding="utf-8") as f:
+            return list(f)
 
+    feed_urls = await asyncio.to_thread(read_input)
     articles = await get_recent_articles(feed_urls, days_back=args.days)
     articles.sort(key=lambda a: a.published, reverse=True)
 
-    generate_html_output(articles, args.output, args.days)
+    await asyncio.to_thread(generate_html_output, articles, args.output, args.days)
 
 
 if __name__ == "__main__":
