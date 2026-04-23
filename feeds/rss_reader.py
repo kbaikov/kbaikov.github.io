@@ -6,7 +6,7 @@
 # ]
 # ///
 
-"""Configurable RSS Feed Fetcher - Uses feedparser but not requests."""
+"""Configurable RSS Feed Fetcher - Uses feedparser-rs."""
 
 import argparse
 import asyncio
@@ -89,7 +89,7 @@ def generate_html_output(
         f.write(html_content)
 
 
-async def main() -> None:
+def main() -> None:
     """Parse command-line arguments and generate HTML."""
     parser = argparse.ArgumentParser(
         description="Fetch recent articles from RSS/Atom feeds and generate HTML output",
@@ -104,12 +104,12 @@ async def main() -> None:
         with open(args.input, encoding="utf-8") as f:
             return list(f)
 
-    feed_urls = await asyncio.to_thread(read_input)
-    articles = await get_recent_articles(feed_urls, days_back=args.days)
+    feed_urls = read_input()
+    articles = asyncio.run(get_recent_articles(feed_urls, days_back=args.days))
     articles.sort(key=lambda a: a.published, reverse=True)
 
-    await asyncio.to_thread(generate_html_output, articles, args.output, args.days)
+    generate_html_output(articles, args.output, args.days)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
