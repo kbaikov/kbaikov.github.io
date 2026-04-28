@@ -30,7 +30,8 @@ async def fetch_feed(
     url: str, session: aiohttp.ClientSession
 ) -> feedparser.FeedParserDict:
     """Fetch feed and parse with feedparser."""
-    async with session.get(url) as resp:
+    timeout = aiohttp.ClientTimeout(total=30)
+    async with session.get(url, timeout=timeout) as resp:
         feed = feedparser.parse(await resp.text())
 
     if feed.bozo:
