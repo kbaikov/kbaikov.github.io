@@ -40,6 +40,16 @@ async def fetch_feed(
     return feed
 
 
+def parse_feed_date(entry) -> datetime:
+    """Extract and parse date from feed entry."""
+    for date_field in ["published_parsed", "updated_parsed", "created_parsed"]:
+        date_tuple = entry.get(date_field)
+        if date_tuple and len(date_tuple) >= 6:
+            # convert from a time.struct_time object into a datetime object
+            return datetime(*date_tuple[0:6], tzinfo=timezone.utc)
+    return datetime(year=2025, month=1, day=1, tzinfo=timezone.utc)
+
+
 async def get_recent_articles(feed_urls: list[str], days_back: int) -> list[Article]:
     """Get articles published within the specified timeframe."""
     cutoff_date = datetime.now(tz=timezone.utc) - timedelta(days=days_back)
@@ -54,14 +64,7 @@ async def get_recent_articles(feed_urls: list[str], days_back: int) -> list[Arti
             continue
 
         for entry in feed.entries:
-            published_date_time_tuple = entry.get(
-                "published_parsed",
-                (2025, 10, 4, 0, 0, 0, 5, 277, 0),
-            )
-            # convert from a time.struct_time object into a datetime object
-            article_date = datetime(
-                *published_date_time_tuple[0:6], tzinfo=timezone.utc
-            )
+            article_date = parse_feed_date(entry)
 
             link = entry.get("link", "")
             title = entry.get("title", "No title")
