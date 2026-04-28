@@ -100,11 +100,9 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    def read_input():
-        with open(args.input, encoding="utf-8") as f:
-            return list(f)
+    with open(args.input, encoding="utf-8") as f:
+        feed_urls = [line.strip() for line in f]
 
-    feed_urls = read_input()
     articles = asyncio.run(get_recent_articles(feed_urls, days_back=args.days))
     articles.sort(key=lambda a: a.published, reverse=True)
 
