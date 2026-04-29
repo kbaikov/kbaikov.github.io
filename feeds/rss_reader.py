@@ -11,7 +11,7 @@
 import argparse
 import asyncio
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import date, timedelta
 
 import aiohttp
 import feedparser_rs as feedparser
@@ -22,7 +22,7 @@ from jinja2 import Environment, FileSystemLoader
 class Article:
     title: str
     link: str
-    published: datetime
+    published: date
     feed_title: str
 
 
@@ -40,19 +40,19 @@ async def fetch_feed(
     return feed
 
 
-def parse_feed_date(entry) -> datetime:
+def parse_feed_date(entry) -> date:
     """Extract and parse date from feed entry."""
     for date_field in ["published_parsed", "updated_parsed", "created_parsed"]:
         date_tuple = entry.get(date_field)
         if date_tuple and len(date_tuple) >= 6:
             # convert from a time.struct_time object into a datetime object
-            return datetime(*date_tuple[0:6], tzinfo=timezone.utc)
-    return datetime(year=2025, month=1, day=1, tzinfo=timezone.utc)
+            return date(*date_tuple[0:3])
+    return date(year=2025, month=1, day=1)
 
 
 async def get_recent_articles(feed_urls: list[str], days_back: int) -> list[Article]:
     """Get articles published within the specified timeframe."""
-    cutoff_date = datetime.now(tz=timezone.utc) - timedelta(days=days_back)
+    cutoff_date = date.today() - timedelta(days=days_back)
     recent_articles: list[Article] = []
 
     async with aiohttp.ClientSession() as session:
@@ -85,7 +85,7 @@ def generate_html_output(
 
     html_content = template.render(
         articles=articles,
-        date_now=datetime.now(tz=timezone.utc).strftime("%Y-%m-%d at %H:%M:%S"),
+        date_now=date.today().strftime("%Y-%m-%d"),
         days_back=days_back,
     )
 
