@@ -4,3 +4,4 @@ http://www.pokerclub-lauf.de/feed
 https://www.captain-of-industry.com/blog-feed.xml
 https://archlinux.org/feeds/news
 https://www.home-assistant.io/atom.xml
+https://xkcd.com/atom.xml
