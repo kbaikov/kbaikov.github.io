@@ -55,9 +55,11 @@ async def get_recent_articles(feed_urls: list[str], days_back: int) -> list[Arti
     cutoff_date = date.today() - timedelta(days=days_back)
     recent_articles: list[Article] = []
 
-    async with aiohttp.ClientSession() as session:
-        coros = [fetch_feed(url, session) for url in feed_urls]
-        results = await asyncio.gather(*coros, return_exceptions=True)
+    semaphore = asyncio.Semaphore(10)
+    async with semaphore:
+        async with aiohttp.ClientSession() as session:
+            coros = [fetch_feed(url, session) for url in feed_urls]
+            results = await asyncio.gather(*coros, return_exceptions=True)
 
     for feed in results:
         if not feed or isinstance(feed, aiohttp.ClientError):
