@@ -10,6 +10,7 @@
 
 import argparse
 import asyncio
+from pathlib import Path
 import textwrap
 from dataclasses import dataclass
 from datetime import date, timedelta
@@ -79,7 +80,7 @@ async def get_recent_articles(feed_urls: list[str], days_back: int) -> list[Arti
 
 
 def generate_html_output(
-    articles: list[Article], output_file: str, days_back: int
+    articles: list[Article], output_file: Path, days_back: int
 ) -> None:
     """Generate HTML output with proper list tags."""
     environment = Environment(loader=FileSystemLoader("feeds/templates/"))
@@ -91,12 +92,11 @@ def generate_html_output(
         days_back=days_back,
     )
 
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write(html_content)
+    output_file.write_text(html_content, encoding="utf-8")
 
 
 def generate_md_output(
-    articles: list[Article], output_file: str, days_back: int
+    articles: list[Article], output_file: Path, days_back: int
 ) -> None:
     """Generate HTML output with proper list tags."""
 
@@ -104,7 +104,9 @@ def generate_md_output(
         # Recent RSS Articles
 
         Generated on {date.today().strftime("%Y-%m-%d")}
+
         Showing articles from the last {days_back} days
+
         Total articles: {len(articles)}
 
         ## Articles
@@ -118,8 +120,7 @@ def generate_md_output(
 
         md_content += md_article
 
-    with open(output_file, "w", encoding="utf-8") as f:
-        f.write(md_content)
+    output_file.write_text(md_content, encoding="utf-8")
 
 
 def main() -> None:
@@ -127,22 +128,23 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Fetch recent articles from RSS/Atom feeds and generate HTML output",
     )
-    parser.add_argument("--input", help="File containing feed URLs (one per line)")
+    parser.add_argument("--input", type=Path, help="File containing feed URLs (one per line)")
     parser.add_argument("--days", type=int, help="Number of days back to check")
-    parser.add_argument("--output", help="Output file. Should be *.html or *.md file.")
+    parser.add_argument("--output", type=Path, help="Output file. Should be *.html or *.md file.")
 
     args = parser.parse_args()
 
-    with open(args.input, encoding="utf-8") as f:
-        feed_urls = [line.strip() for line in f]
+    feed_urls = args.input.read_text().splitlines()
 
     articles = asyncio.run(get_recent_articles(feed_urls, days_back=args.days))
     articles.sort(key=lambda a: a.published, reverse=True)
 
-    if args.output.endswith("html"):
+    if args.output.suffix == ".html":
         generate_html_output(articles, args.output, args.days)
-    elif args.output.endswith("md"):
+    elif args.output.suffix == ".md":
         generate_md_output(articles, args.output, args.days)
+    else:
+        raise ValueError(f"Unsupported output file extension: {args.output.suffix}. Use .html or .md")
 
 
 if __name__ == "__main__":
