@@ -1,7 +1,6 @@
 # /// script
 # dependencies = [
 #   "feedparser-rs==0.6.0",
-#   "jinja2==3.1.6",
 #   "aiohttp==3.14.3",
 # ]
 # ///
@@ -10,14 +9,13 @@
 
 import argparse
 import asyncio
-from pathlib import Path
 import textwrap
 from dataclasses import dataclass
 from datetime import date, timedelta
+from pathlib import Path
 
 import aiohttp
 import feedparser_rs as feedparser
-from jinja2 import Environment, FileSystemLoader
 
 
 @dataclass
@@ -79,22 +77,6 @@ async def get_recent_articles(feed_urls: list[str], days_back: int) -> list[Arti
     return recent_articles
 
 
-def generate_html_output(
-    articles: list[Article], output_file: Path, days_back: int
-) -> None:
-    """Generate HTML output with proper list tags."""
-    environment = Environment(loader=FileSystemLoader("feeds/templates/"))
-    template = environment.get_template("feeds.html")
-
-    html_content = template.render(
-        articles=articles,
-        date_now=date.today().strftime("%Y-%m-%d"),
-        days_back=days_back,
-    )
-
-    output_file.write_text(html_content, encoding="utf-8")
-
-
 def generate_md_output(
     articles: list[Article], output_file: Path, days_back: int
 ) -> None:
@@ -128,9 +110,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Fetch recent articles from RSS/Atom feeds and generate HTML output",
     )
-    parser.add_argument("--input", type=Path, help="File containing feed URLs (one per line)")
+    parser.add_argument(
+        "--input", type=Path, help="File containing feed URLs (one per line)"
+    )
     parser.add_argument("--days", type=int, help="Number of days back to check")
-    parser.add_argument("--output", type=Path, help="Output file. Should be *.html or *.md file.")
+    parser.add_argument(
+        "--output", type=Path, help="Output file. Should be *.html or *.md file."
+    )
 
     args = parser.parse_args()
 
@@ -139,12 +125,12 @@ def main() -> None:
     articles = asyncio.run(get_recent_articles(feed_urls, days_back=args.days))
     articles.sort(key=lambda a: a.published, reverse=True)
 
-    if args.output.suffix == ".html":
-        generate_html_output(articles, args.output, args.days)
-    elif args.output.suffix == ".md":
+    if args.output.suffix == ".md":
         generate_md_output(articles, args.output, args.days)
     else:
-        raise ValueError(f"Unsupported output file extension: {args.output.suffix}. Use .html or .md")
+        raise ValueError(
+            f"Unsupported output file extension: {args.output.suffix}. Use .html or .md"
+        )
 
 
 if __name__ == "__main__":
