@@ -11,7 +11,7 @@ import argparse
 import asyncio
 import textwrap
 from dataclasses import dataclass
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import aiohttp
@@ -52,7 +52,7 @@ def parse_feed_date(entry) -> date:
 
 async def get_recent_articles(feed_urls: list[str], days_back: int) -> list[Article]:
     """Get articles published within the specified timeframe."""
-    cutoff_date = date.today() - timedelta(days=days_back)
+    cutoff_date = datetime.now(tz=timezone.utc).date() - timedelta(days=days_back)
     recent_articles: list[Article] = []
 
     semaphore = asyncio.Semaphore(10)
@@ -85,7 +85,7 @@ def generate_md_output(
     md_content = textwrap.dedent(f"""
         # Recent RSS Articles
 
-        Generated on {date.today().strftime("%Y-%m-%d")}
+        Generated on {datetime.now(tz=timezone.utc).date().strftime("%Y-%m-%d")}
 
         Showing articles from the last {days_back} days
 
