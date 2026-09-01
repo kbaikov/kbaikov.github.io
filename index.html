@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Chapter 1 - GitHub Pages</title>
+        <title>Weight - GitHub Pages</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-55872a43.js";
+            window.path_to_searchindex_js = "searchindex-f13260a6.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-d90f0ffa.js"></script>
+        <script src="toc-2b4e103a.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -174,14 +174,120 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
+                        <h1 id="weight"><a class="header" href="#weight">Weight</a></h1>
+ <script src="https://cdn.plot.ly/plotly-latest.min.js">
+ </script>
+<div id="container"> </div>
+
+<script>
+
+    var xField = 'date';
+    var yField = 'weight';
+
+    var selectorOptions = {
+        buttons: [{
+            step: 'month',
+            stepmode: 'backward',
+            count: 1,
+            label: '1m'
+        }, {
+            step: 'month',
+            stepmode: 'backward',
+            count: 6,
+            label: '6m'
+        }, {
+            step: 'year',
+            stepmode: 'todate',
+            count: 1,
+            label: 'YTD'
+        }, {
+            step: 'year',
+            stepmode: 'backward',
+            count: 1,
+            label: '1y'
+        }, {
+            step: 'all',
+        }],
+    };
+
+    Plotly.d3.csv("result.csv", function (err, rows) {
+        if (err) throw err;
+
+        function unpack(rows, key) {
+            return rows.map(row => row[key]);
+        }
+
+        // Sort rows by date in descending order
+        rows.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        var headerValues = Plotly.d3.keys(rows[0]);
+        var cellValues = headerValues.map(header => unpack(rows, header));
+
+        var table = {
+            type: 'table',
+            columnwidth: Array(headerValues.length).fill(200),
+            columnorder: headerValues.map((_, i) => i),
+            header: {
+                values: headerValues,
+                align: "center",
+            },
+            cells: {
+                values: cellValues,
+                align: "center",
+            },
+            domain: { x: [0, 1], y: [0, 0.5] }
+        };
+
+        var trace1 = {
+            x: unpack(rows, 'date'),
+            y: unpack(rows, 'weight'),
+            mode: 'lines',
+            name: 'Weight',
+            connectgaps: true
+        };
+
+        var data = [table, trace1];
+
+        var layout = {
+            title: "Weight",
+            height: 1000,
+            xaxis: {
+                domain: [0, 1],
+                rangeselector: selectorOptions,
+                showline: true,
+                zeroline: false,
+                showgrid: true,
+                mirror: true,
+                ticklen: 9,
+                autorange: true
+            },
+            yaxis: {
+                domain: [0.60, 0.98],
+                showgrid: true,
+                showline: true,
+                gridcolor: '#bdbdbd',
+                gridwidth: 1,
+                showline: true,
+                zeroline: false,
+                showgrid: true,
+                mirror: true,
+                ticklen: 9,
+                autorange: true
+            }
+        };
+
+        Plotly.plot('container', data, layout);
+    });
+
+
+</script>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
 
-                            <a rel="next prefetch" href="weight.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="rss.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -192,7 +298,7 @@
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
 
-                    <a rel="next prefetch" href="weight.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="rss.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
