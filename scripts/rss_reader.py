@@ -32,7 +32,7 @@ class Article:
 async def fetch_feed(
     url: str, session: aiohttp.ClientSession
 ) -> feedparser.FeedParserDict:
-    """Fetch feed and parse with feedparser."""
+    logger.debug(f"Fetching url: {url}")
     timeout = aiohttp.ClientTimeout(total=30)
     async with session.get(url, timeout=timeout) as resp:
         feed = feedparser.parse(await resp.text())
@@ -45,9 +45,13 @@ async def fetch_feed(
 
 def parse_feed_date(entry) -> date | None:
     """Extract and parse date from feed entry."""
+    logger.debug(f"Parsing date: {entry}")
     for date_field in ["published_parsed", "updated_parsed", "created_parsed"]:
         date_tuple = entry.get(date_field)
         if date_tuple and len(date_tuple) >= 6:
+            logger.debug(
+                f"Converting date tuple: {date_tuple} found in field: {date_field}"
+            )
             # convert from a time.struct_time object into a datetime object
             return date(*date_tuple[0:3])
 
@@ -159,4 +163,8 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    import sys
+
+    logger.remove()  # Remove the default handler.
+    logger.add(sys.stderr, level="INFO")
     main()
