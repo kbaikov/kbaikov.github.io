@@ -113,14 +113,22 @@ def main() -> None:
     parser.add_argument(
         "--input", type=Path, help="File containing feed URLs (one per line)"
     )
-    parser.add_argument("--days", type=int, help="Number of days back to check")
     parser.add_argument(
-        "--output", type=Path, help="Output file. Should be *.html or *.md file."
+        "--days", type=int, default=14, help="Number of days back to check"
+    )
+    parser.add_argument(
+        "--output", type=Path, help="Output file. Should be an *.md file."
     )
 
     args = parser.parse_args()
 
-    feed_urls = args.input.read_text().splitlines()
+    try:
+        feed_urls = args.input.read_text().splitlines()
+    except FileNotFoundError:
+        raise FileNotFoundError("The input file should exist")
+
+    if args.days <= 0:
+        raise ValueError("Days should be a positive integer")
 
     articles = asyncio.run(get_recent_articles(feed_urls, days_back=args.days))
     articles.sort(key=lambda a: a.published, reverse=True)
