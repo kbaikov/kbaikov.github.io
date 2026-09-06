@@ -14,6 +14,7 @@ import textwrap
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
+from time import perf_counter
 
 import aiohttp
 import feedparser_rs as feedparser
@@ -142,7 +143,10 @@ def main() -> None:
     if args.days <= 0:
         raise ValueError("Days should be a positive integer")
 
+    start_time = perf_counter()
     articles_raw = asyncio.run(get_recent_articles(feed_urls, args.concurrency))
+    fetch_end_time = perf_counter()
+    logger.debug(f"Fetched in: {fetch_end_time - start_time:.2f} sec")
     articles = parse_articles(articles_raw, args.days)
     articles.sort(key=lambda a: a.published, reverse=True)
 
