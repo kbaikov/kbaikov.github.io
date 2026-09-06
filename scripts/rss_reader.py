@@ -105,7 +105,8 @@ def generate_md_output(
     for article in articles:
         md_article = textwrap.dedent(f"""
             - [{article.title}]({article.link})
-            {article.feed_title} {article.published}
+
+                {article.feed_title} {article.published}
             """)
 
         md_content += md_article
