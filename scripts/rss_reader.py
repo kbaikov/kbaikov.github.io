@@ -2,6 +2,7 @@
 # dependencies = [
 #   "feedparser-rs==0.6.0",
 #   "aiohttp==3.14.3",
+#   "loguru",
 # ]
 # ///
 
@@ -10,12 +11,14 @@
 import argparse
 import asyncio
 import textwrap
+from configparser import NoOptionError
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import aiohttp
 import feedparser_rs as feedparser
+from loguru import logger
 
 
 @dataclass
@@ -35,19 +38,22 @@ async def fetch_feed(
         feed = feedparser.parse(await resp.text())
 
     if feed.bozo:
+        logger.warning("Bad feed: {} at url: {}. Ignoring.", feed, url)
         pass
 
     return feed
 
 
-def parse_feed_date(entry) -> date:
+def parse_feed_date(entry) -> date | None:
     """Extract and parse date from feed entry."""
     for date_field in ["published_parsed", "updated_parsed", "created_parsed"]:
         date_tuple = entry.get(date_field)
         if date_tuple and len(date_tuple) >= 6:
             # convert from a time.struct_time object into a datetime object
             return date(*date_tuple[0:3])
-    return date(year=2025, month=1, day=1)
+
+    logger.warning("Date field not parsed")
+    return None
 
 
 async def get_recent_articles(feed_urls: list[str], days_back: int) -> list[Article]:
@@ -71,7 +77,7 @@ async def get_recent_articles(feed_urls: list[str], days_back: int) -> list[Arti
             title = entry.get("title", "No title")
             feed_title = feed.feed.get("title", "Unknown feed")
 
-            if link and article_date >= cutoff_date:
+            if link and article_date and article_date >= cutoff_date:
                 recent_articles.append(Article(title, link, article_date, feed_title))
 
     return recent_articles
