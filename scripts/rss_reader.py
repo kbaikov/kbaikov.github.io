@@ -11,7 +11,6 @@
 import argparse
 import asyncio
 import textwrap
-from configparser import NoOptionError
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -38,8 +37,7 @@ async def fetch_feed(
         feed = feedparser.parse(await resp.text())
 
     if feed.bozo:
-        logger.warning("Bad feed: {} at url: {}. Ignoring.", feed, url)
-        pass
+        logger.warning("Bad feed: {} at url: {}.", feed, url)
 
     return feed
 
@@ -56,18 +54,22 @@ def parse_feed_date(entry) -> date | None:
     return None
 
 
-async def get_recent_articles(feed_urls: list[str], days_back: int) -> list[Article]:
+async def get_recent_articles(feed_urls: list[str], concurrency: int) -> list:
     """Get articles published within the specified timeframe."""
+
+    async with asyncio.Semaphore(concurrency):
+        async with aiohttp.ClientSession() as session:
+            coros = [fetch_feed(url, session) for url in feed_urls]
+            return await asyncio.gather(*coros, return_exceptions=True)
+
+
+def parse_articles(articles: list, days_back: int) -> list[Article]:
     cutoff_date = datetime.now(tz=timezone.utc).date() - timedelta(days=days_back)
     recent_articles: list[Article] = []
 
-    semaphore = asyncio.Semaphore(10)
-    async with semaphore, aiohttp.ClientSession() as session:
-        coros = [fetch_feed(url, session) for url in feed_urls]
-        results = await asyncio.gather(*coros, return_exceptions=True)
-
-    for feed in results:
+    for feed in articles:
         if not feed or isinstance(feed, (aiohttp.ClientError, TimeoutError)):
+            logger.warning("Bad feed: {} at url: {}. Ignoring.", feed)
             continue
 
         for entry in feed.entries:
@@ -123,6 +125,9 @@ def main() -> None:
         "--days", type=int, default=14, help="Number of days back to check"
     )
     parser.add_argument(
+        "--concurrency", type=int, default=10, help="semaphore concurrency"
+    )
+    parser.add_argument(
         "--output", type=Path, help="Output file. Should be an *.md file."
     )
 
@@ -136,7 +141,8 @@ def main() -> None:
     if args.days <= 0:
         raise ValueError("Days should be a positive integer")
 
-    articles = asyncio.run(get_recent_articles(feed_urls, days_back=args.days))
+    articles_raw = asyncio.run(get_recent_articles(feed_urls, args.concurrency))
+    articles = parse_articles(articles_raw, args.days)
     articles.sort(key=lambda a: a.published, reverse=True)
 
     if args.output.suffix == ".md":
