@@ -60,6 +60,7 @@ def parse_feed_date(entry) -> date | None:
 
 
 async def fetch_all_feeds(feed_urls: list[str], concurrency: int) -> list:
+    logger.info(f"Fetching {len(feed_urls)} feeds...")
     sem = asyncio.Semaphore(concurrency)
     async with aiohttp.ClientSession() as session:
 
@@ -96,8 +97,6 @@ def parse_articles(articles: list, days_back: int) -> list[Article]:
 def generate_md_output(
     articles: list[Article], output_file: Path, days_back: int
 ) -> None:
-    """Generate HTML output with proper list tags."""
-
     md_content = textwrap.dedent(f"""
         # Recent RSS Articles
 
@@ -123,9 +122,8 @@ def generate_md_output(
 
 
 def main() -> None:
-    """Parse command-line arguments and generate HTML."""
     parser = argparse.ArgumentParser(
-        description="Fetch recent articles from RSS/Atom feeds and generate HTML output",
+        description="Fetch recent articles from RSS/Atom feeds and generate output",
     )
     parser.add_argument(
         "--input", type=Path, help="File containing feed URLs (one per line)"
@@ -155,13 +153,14 @@ def main() -> None:
     fetch_end_time = perf_counter()
     logger.debug(f"Fetched in: {fetch_end_time - start_time:.2f} sec")
     articles = parse_articles(articles_raw, args.days)
+    logger.info(f"Found {len(articles)} recent articles")
     articles.sort(key=lambda a: a.published, reverse=True)
 
     if args.output.suffix == ".md":
         generate_md_output(articles, args.output, args.days)
     else:
         raise ValueError(
-            f"Unsupported output file extension: {args.output.suffix}. Use .html or .md"
+            f"Unsupported output file extension: {args.output.suffix}. Use .md"
         )
 
 
