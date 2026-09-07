@@ -6,7 +6,11 @@
 # ]
 # ///
 
-"""Configurable RSS Feed Fetcher - Uses feedparser-rs."""
+"""Configurable RSS Feed Fetcher - Uses feedparser-rs.
+
+Example:
+    uv run scripts/rss_reader.py --input scripts/programming.txt --days 14 --output src/rss.md
+"""
 
 import argparse
 import asyncio
@@ -32,9 +36,16 @@ class Article:
 async def fetch_feed(
     url: str, session: aiohttp.ClientSession
 ) -> feedparser.FeedParserDict:
+
     logger.debug(f"Fetching url: {url}")
     timeout = aiohttp.ClientTimeout(total=30)
-    async with session.get(url, timeout=timeout) as resp:
+    headers = {"User-Agent": "RSS-Reader/1.0 (https://kbaikov.github.io/rss.html)"}
+
+    async with session.get(url, timeout=timeout, headers=headers) as resp:
+        if resp.status == 429:
+            await asyncio.sleep(int(resp.headers.get("Retry-After", 5)))
+            return await fetch_feed(url, session)
+        resp.raise_for_status()
         feed = feedparser.parse(await resp.text())
 
     if feed.bozo:
