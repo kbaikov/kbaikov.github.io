@@ -89,7 +89,7 @@ def parse_articles(articles: list, days_back: int) -> list[Article]:
 
     for feed in articles:
         if not feed or isinstance(feed, (aiohttp.ClientError, TimeoutError)):
-            logger.warning("Bad feed: {} at url: {}. Ignoring.", feed)
+            logger.warning("Bad feed: {}. Ignoring.", feed)
             continue
 
         for entry in feed.entries:
