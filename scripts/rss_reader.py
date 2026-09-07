@@ -59,13 +59,16 @@ def parse_feed_date(entry) -> date | None:
     return None
 
 
-async def get_recent_articles(feed_urls: list[str], concurrency: int) -> list:
-    """Get articles published within the specified timeframe."""
+async def fetch_all_feeds(feed_urls: list[str], concurrency: int) -> list:
+    sem = asyncio.Semaphore(concurrency)
+    async with aiohttp.ClientSession() as session:
 
-    async with asyncio.Semaphore(concurrency):
-        async with aiohttp.ClientSession() as session:
-            coros = [fetch_feed(url, session) for url in feed_urls]
-            return await asyncio.gather(*coros, return_exceptions=True)
+        async def fetch_one(url):
+            async with sem:
+                return await fetch_feed(url, session)
+
+        coros = [fetch_one(url) for url in feed_urls]
+        return await asyncio.gather(*coros, return_exceptions=True)
 
 
 def parse_articles(articles: list, days_back: int) -> list[Article]:
@@ -148,7 +151,7 @@ def main() -> None:
         raise ValueError("Days should be a positive integer")
 
     start_time = perf_counter()
-    articles_raw = asyncio.run(get_recent_articles(feed_urls, args.concurrency))
+    articles_raw = asyncio.run(fetch_all_feeds(feed_urls, args.concurrency))
     fetch_end_time = perf_counter()
     logger.debug(f"Fetched in: {fetch_end_time - start_time:.2f} sec")
     articles = parse_articles(articles_raw, args.days)
