@@ -1,6 +1,6 @@
 # /// script
 # dependencies = [
-#   "feedparser-rs==0.6.0",
+#   "feedparser-rs==0.7.0",
 #   "aiohttp==3.14.3",
 #   "loguru",
 # ]
