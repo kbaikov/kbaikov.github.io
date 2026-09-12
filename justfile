@@ -1,7 +1,7 @@
 
 # shows security issues in github actions
 zizmor:
-    uvx zizmor --quiet --fix .github
+    uvx zizmor --gh-token $(gh auth token) --quiet --fix .github
 
 # updates and pins github actions to hash
 pin-github-actions:
