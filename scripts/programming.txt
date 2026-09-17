@@ -26,3 +26,4 @@ https://pycoders.com/feed/dRpBGZ6X
 https://pypi.org/rss/project/feedparser_rs/releases.xml
 https://pypi.org/rss/project/aiohttp/releases.xml
 https://pypi.org/rss/project/loguru/releases.xml
+https://rustbites.com/index.xml
