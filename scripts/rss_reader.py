@@ -55,22 +55,6 @@ async def fetch_feed(
     return feed
 
 
-def parse_feed_date(entry) -> date | None:
-    """Extract and parse date from feed entry."""
-    logger.debug(f"Parsing date: {entry}")
-    for date_field in ["published_parsed", "updated_parsed", "created_parsed"]:
-        date_tuple = entry.get(date_field)
-        if date_tuple and len(date_tuple) >= 6:
-            logger.debug(
-                f"Converting date tuple: {date_tuple} found in field: {date_field}"
-            )
-            # convert from a time.struct_time object into a datetime object
-            return date(*date_tuple[0:3])
-
-    logger.warning("Date field not parsed")
-    return None
-
-
 async def fetch_all_feeds(feed_urls: list[str], concurrency: int) -> list:
     logger.info(f"Fetching {len(feed_urls)} feeds...")
     sem = asyncio.Semaphore(concurrency)
@@ -84,24 +68,35 @@ async def fetch_all_feeds(feed_urls: list[str], concurrency: int) -> list:
         return await asyncio.gather(*coros, return_exceptions=True)
 
 
-def parse_articles(articles: list, days_back: int) -> list[Article]:
+def parse_articles(article_feeds: list, days_back: int) -> list[Article]:
     cutoff_date = datetime.now(tz=timezone.utc).date() - timedelta(days=days_back)
     recent_articles: list[Article] = []
 
-    for feed in articles:
+    for feed in article_feeds:
         if not feed or isinstance(feed, (aiohttp.ClientError, TimeoutError)):
             logger.warning("Bad feed: {}. Ignoring.", feed)
             continue
 
+        feed_title = feed.feed.get("title", "Unknown feed")
         for entry in feed.entries:
-            article_date = parse_feed_date(entry)
+            article_date_tuple = (
+                entry.get("published_parsed")
+                or entry.get("updated_parsed")
+                or entry.get("created_parsed")
+            )
+            if not article_date_tuple:
+                continue
+            if article_date_tuple <= cutoff_date.timetuple():
+                continue
 
             link = entry.get("link", "")
+            if not link:
+                continue
             title = entry.get("title", "No title")
-            feed_title = feed.feed.get("title", "Unknown feed")
 
-            if link and article_date and article_date >= cutoff_date:
-                recent_articles.append(Article(title, link, article_date, feed_title))
+            recent_articles.append(
+                Article(title, link, date(*article_date_tuple[:3]), feed_title)
+            )
 
     return recent_articles
 
