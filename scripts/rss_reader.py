@@ -14,6 +14,7 @@ Example:
 
 import argparse
 import asyncio
+import sys
 import textwrap
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
@@ -148,8 +149,18 @@ def main() -> None:
     parser.add_argument(
         "--output", type=Path, help="Output file. Should be an *.md file."
     )
+    parser.add_argument(
+        "--verbose",
+        default=False,
+        action="store_true",
+        help="Enable debug output.",
+    )
 
     args = parser.parse_args()
+
+    if not args.verbose:
+        logger.remove()  # Remove the default handler.
+        logger.add(sys.stderr, level="INFO")
 
     try:
         feed_urls = args.input.read_text().splitlines()
@@ -176,8 +187,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    import sys
-
-    logger.remove()  # Remove the default handler.
-    logger.add(sys.stderr, level="INFO")
     main()
