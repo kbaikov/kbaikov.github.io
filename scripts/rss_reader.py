@@ -55,7 +55,9 @@ async def fetch_feed(
     return feed
 
 
-async def fetch_all_feeds(feed_urls: list[str], concurrency: int) -> list:
+async def fetch_all_feeds(
+    feed_urls: list[str], concurrency: int
+) -> list[feedparser.FeedParserDict]:
     logger.info(f"Fetching {len(feed_urls)} feeds...")
     sem = asyncio.Semaphore(concurrency)
     async with aiohttp.ClientSession() as session:
@@ -68,7 +70,9 @@ async def fetch_all_feeds(feed_urls: list[str], concurrency: int) -> list:
         return await asyncio.gather(*coros, return_exceptions=True)
 
 
-def parse_articles(article_feeds: list, days_back: int) -> list[Article]:
+def parse_articles(
+    article_feeds: list[feedparser.FeedParserDict], days_back: int
+) -> list[Article]:
     cutoff_date = datetime.now(tz=timezone.utc).date() - timedelta(days=days_back)
     recent_articles: list[Article] = []
 
