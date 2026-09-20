@@ -12,9 +12,9 @@ Example:
 """
 
 import argparse
-import asyncio
 import sys
 import textwrap
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -32,7 +32,7 @@ class Article:
     feed_title: str
 
 
-async def fetch_feed(url: str) -> feedparser_rs.FeedParserDict | None:
+def fetch_feed(url: str) -> feedparser_rs.FeedParserDict | None:
 
     logger.debug(f"Fetching url: {url}")
     user_agent = "RSS-Reader/1.0 (https://kbaikov.github.io/rss.html)"
@@ -45,12 +45,13 @@ async def fetch_feed(url: str) -> feedparser_rs.FeedParserDict | None:
     return feed
 
 
-async def fetch_all_feeds(feed_urls: list[str]) -> list[feedparser_rs.FeedParserDict]:
+def fetch_all_feeds(feed_urls: list[str]) -> list[feedparser_rs.FeedParserDict]:
 
     logger.info(f"Fetching {len(feed_urls)} feeds...")
-    async with asyncio.TaskGroup() as tg:
-        tasks = [tg.create_task(fetch_feed(url)) for url in feed_urls]
-    return [task.result() for task in tasks]
+
+    with ThreadPoolExecutor() as executor:
+        futures = [executor.submit(fetch_feed, url) for url in feed_urls]
+        return [_.result() for _ in futures]
 
 
 def parse_articles(
@@ -150,7 +151,7 @@ def main() -> None:
         raise ValueError("Days should be a positive integer")
 
     start_time = perf_counter()
-    articles_raw = asyncio.run(fetch_all_feeds(feed_urls))
+    articles_raw = fetch_all_feeds(feed_urls)
     fetch_end_time = perf_counter()
     logger.info(f"Fetched in: {fetch_end_time - start_time:.2f} sec")
     articles = parse_articles(articles_raw, args.days)
