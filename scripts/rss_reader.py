@@ -1,7 +1,6 @@
 # /// script
 # dependencies = [
 #   "feedparser-rs==0.7.0",
-#   "aiohttp==3.14.3",
 #   "loguru",
 # ]
 # ///
@@ -21,8 +20,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from time import perf_counter
 
-import aiohttp
-import feedparser_rs as feedparser
+import feedparser_rs
 from loguru import logger
 
 
@@ -34,50 +32,35 @@ class Article:
     feed_title: str
 
 
-async def fetch_feed(
-    url: str, session: aiohttp.ClientSession
-) -> feedparser.FeedParserDict:
+async def fetch_feed(url: str) -> feedparser_rs.FeedParserDict | None:
 
     logger.debug(f"Fetching url: {url}")
-    timeout = aiohttp.ClientTimeout(total=30)
-    headers = {"User-Agent": "RSS-Reader/1.0 (https://kbaikov.github.io/rss.html)"}
+    user_agent = "RSS-Reader/1.0 (https://kbaikov.github.io/rss.html)"
 
-    async with session.get(url, timeout=timeout, headers=headers) as resp:
-        if resp.status == 429:
-            await asyncio.sleep(int(resp.headers.get("Retry-After", 5)))
-            return await fetch_feed(url, session)
-        resp.raise_for_status()
-        feed = feedparser.parse(await resp.text())
-
+    feed = feedparser_rs.parse_url(url, user_agent=user_agent)
     if feed.bozo:
         logger.warning("Bad feed: {} at url: {}.", feed, url)
+        return None
 
     return feed
 
 
-async def fetch_all_feeds(
-    feed_urls: list[str], concurrency: int
-) -> list[feedparser.FeedParserDict]:
+async def fetch_all_feeds(feed_urls: list[str]) -> list[feedparser_rs.FeedParserDict]:
+
     logger.info(f"Fetching {len(feed_urls)} feeds...")
-    sem = asyncio.Semaphore(concurrency)
-    async with aiohttp.ClientSession() as session:
-
-        async def fetch_one(url):
-            async with sem:
-                return await fetch_feed(url, session)
-
-        coros = [fetch_one(url) for url in feed_urls]
-        return await asyncio.gather(*coros, return_exceptions=True)
+    async with asyncio.TaskGroup() as tg:
+        tasks = [tg.create_task(fetch_feed(url)) for url in feed_urls]
+    return [task.result() for task in tasks]
 
 
 def parse_articles(
-    article_feeds: list[feedparser.FeedParserDict], days_back: int
+    article_feeds: list[feedparser_rs.FeedParserDict], days_back: int
 ) -> list[Article]:
     cutoff_date = datetime.now(tz=timezone.utc).date() - timedelta(days=days_back)
     recent_articles: list[Article] = []
 
     for feed in article_feeds:
-        if not feed or isinstance(feed, (aiohttp.ClientError, TimeoutError)):
+        if not feed or isinstance(feed, (ValueError, TimeoutError)):
             logger.warning("Bad feed: {}. Ignoring.", feed)
             continue
 
@@ -143,9 +126,6 @@ def main() -> None:
         "--days", type=int, default=14, help="Number of days back to check"
     )
     parser.add_argument(
-        "--concurrency", type=int, default=10, help="semaphore concurrency"
-    )
-    parser.add_argument(
         "--output", type=Path, help="Output file. Should be an *.md file."
     )
     parser.add_argument(
@@ -170,9 +150,9 @@ def main() -> None:
         raise ValueError("Days should be a positive integer")
 
     start_time = perf_counter()
-    articles_raw = asyncio.run(fetch_all_feeds(feed_urls, args.concurrency))
+    articles_raw = asyncio.run(fetch_all_feeds(feed_urls))
     fetch_end_time = perf_counter()
-    logger.debug(f"Fetched in: {fetch_end_time - start_time:.2f} sec")
+    logger.info(f"Fetched in: {fetch_end_time - start_time:.2f} sec")
     articles = parse_articles(articles_raw, args.days)
     logger.info(f"Found {len(articles)} recent articles")
     articles.sort(key=lambda a: a.published, reverse=True)
