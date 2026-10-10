@@ -16,7 +16,7 @@ import sys
 import textwrap
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from time import perf_counter
 
@@ -57,7 +57,7 @@ def fetch_all_feeds(feed_urls: list[str]) -> list[feedparser_rs.FeedParserDict]:
 def parse_articles(
     article_feeds: list[feedparser_rs.FeedParserDict], days_back: int
 ) -> list[Article]:
-    cutoff_date = datetime.now(tz=timezone.utc).date() - timedelta(days=days_back)
+    cutoff_date = datetime.now(tz=UTC).date() - timedelta(days=days_back)
     recent_articles: list[Article] = []
 
     for feed in article_feeds:
@@ -95,7 +95,7 @@ def generate_md_output(
     md_content = textwrap.dedent(f"""
         # Recent RSS Articles
 
-        Generated on {datetime.now(tz=timezone.utc).date().strftime("%Y-%m-%d")}
+        Generated on {datetime.now(tz=UTC).date().strftime("%Y-%m-%d")}
 
         Showing articles from the last {days_back} days
 
