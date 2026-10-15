@@ -5,3 +5,5 @@ https://archlinux.org/feeds/news
 https://www.home-assistant.io/atom.xml
 https://xkcd.com/atom.xml
 https://coigame.com/Blog/Rss
+https://www.meetup.com/rust-noris/events/rss/
+https://www.meetup.com/rust-berlin/events/rss/
