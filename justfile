@@ -1,3 +1,5 @@
+default:
+    @just zizmor pin-github-actions
 
 # shows security issues in github actions
 zizmor:
