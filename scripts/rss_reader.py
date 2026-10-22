@@ -1,7 +1,6 @@
 # /// script
 # dependencies = [
 #   "feedparser-rs==0.7.0",
-#   "loguru",
 # ]
 # ///
 
@@ -12,7 +11,7 @@ Example:
 """
 
 import argparse
-import sys
+import logging
 import textwrap
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
@@ -21,7 +20,8 @@ from pathlib import Path
 from time import perf_counter
 
 import feedparser_rs
-from loguru import logger
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -39,7 +39,7 @@ def fetch_feed(url: str) -> feedparser_rs.FeedParserDict | None:
 
     feed = feedparser_rs.parse_url(url, user_agent=user_agent)
     if feed.bozo:
-        logger.warning("Bad feed: {} at url: {}.", feed, url)
+        logger.warning(f"Bad feed: {feed} at url: {url}.")
         return None
 
     return feed
@@ -62,7 +62,7 @@ def parse_articles(
 
     for feed in article_feeds:
         if not feed or isinstance(feed, (ValueError, TimeoutError)):
-            logger.warning("Bad feed: {}. Ignoring.", feed)
+            logger.warning(f"Bad feed: {feed}. Ignoring.")
             continue
 
         feed_title = feed.feed.get("title", "Unknown feed")
@@ -142,9 +142,10 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    if not args.verbose:
-        logger.remove()  # Remove the default handler.
-        logger.add(sys.stderr, level="INFO")
+    logging.basicConfig(
+        level=logging.INFO if not args.verbose else logging.DEBUG,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
 
     try:
         feed_urls = args.input.read_text().splitlines()
