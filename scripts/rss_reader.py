@@ -94,9 +94,13 @@ def generate_md_output(
 ) -> None:
     md_content = textwrap.dedent(f"""\
         ---
+        
         Generated on: {datetime.now(tz=UTC).date().strftime("%Y-%m-%d %A")}
+
         Showing articles from the last: {days_back} days
+        
         Total articles: {len(articles)}
+        
         ---
 
 
