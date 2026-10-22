@@ -92,16 +92,16 @@ def parse_articles(
 def generate_md_output(
     articles: list[Article], output_file: Path, days_back: int
 ) -> None:
-    md_content = textwrap.dedent(f"""
-        # Recent RSS Articles
-
-        Generated on {datetime.now(tz=UTC).date().strftime("%Y-%m-%d")}
-
-        Showing articles from the last {days_back} days
-
+    md_content = textwrap.dedent(f"""\
+        ---
+        Generated on: {datetime.now(tz=UTC).date().strftime("%Y-%m-%d %A")}
+        Showing articles from the last: {days_back} days
         Total articles: {len(articles)}
+        ---
+
 
         ## Articles
+
         """)
 
     for article in articles:
