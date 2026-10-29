@@ -7,3 +7,4 @@ https://xkcd.com/atom.xml
 https://coigame.com/Blog/Rss
 https://www.meetup.com/rust-noris/events/rss/
 https://www.meetup.com/rust-berlin/events/rss/
+https://wikipop.sowin.io/feed.xml
