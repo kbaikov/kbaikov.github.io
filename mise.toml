@@ -1,15 +1,20 @@
 [tasks.zizmor]
 description = "show security issues in github actions"
-run = "uvx zizmor --gh-token $(gh auth token) --quiet --fix .github"
+run = "uvx zizmor --gh-token $(gh auth token) --quiet --fix=all .github"
 
 [tasks.pin-github-actions]
 description = "update and pins github actions to hash"
 run = "uvx gha-update"
 
-[tasks.update-feeds]
-description = "Generate feeds to md files"
+[tasks."update-feeds:general"]
+description = "Generate general feeds to md files"
 run = """
 uv run --python 3.15t scripts/rss_reader.py --input scripts/feeds.txt --days 14 --output src/rss.md
+"""
+
+[tasks."update-feeds:programming"]
+description = "Generate programming feeds to md files"
+run = """
 uv run --python 3.15t scripts/rss_reader.py --input scripts/programming.txt --days 14 --output src/rss_programming.md
 """
 

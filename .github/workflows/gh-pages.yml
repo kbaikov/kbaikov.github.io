@@ -21,9 +21,9 @@ jobs:
           persist-credentials: false
 
       - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
 
-      - run: uv run --python 3.15t scripts/rss_reader.py --input scripts/feeds.txt --days 14 --output src/rss.md
-      - run: uv run --python 3.15t scripts/rss_reader.py --input scripts/programming.txt --days 14 --output src/rss_programming.md
+      - run: mise run update-feeds:*
 
       - name: Setup mdBook
         uses: peaceiris/actions-mdbook@ee69d230fe19748b7abf22df32acaa93833fad08 # v2.0.0
