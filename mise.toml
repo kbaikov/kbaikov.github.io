@@ -1,0 +1,37 @@
+[tasks.zizmor]
+description = "show security issues in github actions"
+run = "uvx zizmor --gh-token $(gh auth token) --quiet --fix .github"
+
+[tasks.pin-github-actions]
+description = "update and pins github actions to hash"
+run = "uvx gha-update"
+
+[tasks.update-feeds]
+description = "Generate feeds to md files"
+run = """
+uv run --python 3.15t scripts/rss_reader.py --input scripts/feeds.txt --days 14 --output src/rss.md
+uv run --python 3.15t scripts/rss_reader.py --input scripts/programming.txt --days 14 --output src/rss_programming.md
+"""
+
+[tasks.weight]
+description = "append weight to src/result.csv date,weight,bmi,bmi_prime,cat0weight,cat1weight"
+usage = '''
+arg "<weight>"
+'''
+run = '''
+#!/usr/bin/env -S uv run --script
+import datetime
+import os
+
+HEIGHT = 1.83
+FILE = "src/result.csv"
+cat0weight = 3.93
+cat1weight = 5.61
+date = datetime.date.today().isoformat()
+weight = float(os.environ["usage_weight"])
+BMI = round(weight / HEIGHT**2, 1)
+BMI_Prime = round(weight / HEIGHT**2 / 25, 1)
+
+with open(FILE, "a") as file:
+    file.write(f"{date},{weight},{BMI},{BMI_Prime},{cat0weight},{cat1weight}\n")
+'''
