@@ -26,7 +26,7 @@ jobs:
       - run: mise run update-feeds:*
 
       - name: Setup mdBook
-        uses: peaceiris/actions-mdbook@ee69d230fe19748b7abf22df32acaa93833fad08 # v2.0.0
+        uses: peaceiris/actions-mdbook@a6f333f62c4b46ed5190d00cab3b7f9a6996274c # latest github commit
         with:
           mdbook-version: "latest"
 
