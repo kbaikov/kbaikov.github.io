@@ -25,10 +25,9 @@ jobs:
 
       - run: mise run update-feeds:*
 
-      - name: Setup mdBook
-        uses: peaceiris/actions-mdbook@a6f333f62c4b46ed5190d00cab3b7f9a6996274c # latest github commit
+      - uses: jontze/action-mdbook@afbd393a3b4724186e112f783b3c9e645788c90c # v3.0.1
         with:
-          mdbook-version: "latest"
+          token: ${{secrets.GITHUB_TOKEN}}
 
       - run: mdbook build
 
