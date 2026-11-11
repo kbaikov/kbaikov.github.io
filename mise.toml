@@ -30,8 +30,8 @@ import os
 
 HEIGHT = 1.83
 FILE = "src/result.csv"
-cat0weight = 3.93
-cat1weight = 5.61
+cat0weight = 3.87
+cat1weight = 5.86
 date = datetime.date.today().isoformat()
 weight = float(os.environ["usage_weight"])
 BMI = round(weight / HEIGHT**2, 1)
