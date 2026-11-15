@@ -1,6 +1,6 @@
 # /// script
 # dependencies = [
-#   "feedparser-rs==0.7.0",
+#   "feedparser-rs==0.7.2",
 # ]
 # ///
 
