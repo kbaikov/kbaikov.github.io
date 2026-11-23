@@ -1,10 +1,5 @@
 https://mullvad.net/en/blog/feed/atom
-https://www.oglaf.com/feeds/rss/
 http://www.pokerclub-lauf.de/feed
 https://archlinux.org/feeds/news
-https://www.home-assistant.io/atom.xml
-https://xkcd.com/atom.xml
 https://coigame.com/Blog/Rss
-https://www.meetup.com/rust-noris/events/rss/
-https://www.meetup.com/rust-berlin/events/rss/
 https://wikipop.sowin.io/feed.xml
