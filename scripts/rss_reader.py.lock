@@ -1,0 +1,22 @@
+version = 1
+revision = 5
+requires-python = ">=3.14"
+
+[manifest]
+requirements = [{ name = "feedparser-rs", specifier = "==0.7.2" }]
+
+[[package]]
+name = "feedparser-rs"
+version = "0.7.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/1a/c6/4dc6264192db2f2d19d70a963ed67b0fd19ac3970b9c4e7a7b38f71839c0/feedparser_rs-0.7.2.tar.gz", hash = "sha256:de8d1a620a394c2aa099cfaaada091c8a9d670f7436b8b864e05f2b0336b0e9c", size = 341100, upload-time = "2026-11-01T10:51:33.988Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4c/fe/1017037e23420411488e38d264ea396ad4e335205ceb99b306d30a755b9a/feedparser_rs-0.7.2-cp314-cp314-macosx_10_12_x86_64.whl", hash = "sha256:3d3ab24003fdf1b420879d07585bb8441727cb576f88e5774173b191dbb1362d", size = 3240722, upload-time = "2026-11-01T10:51:18.28Z" },
+    { url = "https://files.pythonhosted.org/packages/f9/1c/aba130922465b4579296088d5b257eaab52c38037e4040483403bf3e45d3/feedparser_rs-0.7.2-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:d9f16058d67092c62c1c29a9429a07f3ffa545c91608cb38db5f1f543551da57", size = 3073593, upload-time = "2026-11-01T10:51:19.85Z" },
+    { url = "https://files.pythonhosted.org/packages/80/10/4c1d1e8e1ad75a54c9583f4af425fd9a7672eda8f499ae73c5224254994b/feedparser_rs-0.7.2-cp314-cp314-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:9b4d2028a3099fd439d3672b9be78f8307c628f9431ab9558f07e9f9063af248", size = 3149631, upload-time = "2026-11-01T10:51:21.78Z" },
+    { url = "https://files.pythonhosted.org/packages/6c/fc/3c4eaed8b19741ece901706bd76b4e05f91028da16344df6aa0956654e7b/feedparser_rs-0.7.2-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:e0ee9a52de70b193cb7e3cae863133caa1f021c55e4cc355945ef13ba749085e", size = 3318407, upload-time = "2026-11-01T10:51:23.657Z" },
+    { url = "https://files.pythonhosted.org/packages/30/4d/99ac5c6833bc57f0573d5f5b618fe24e005f354268d33c7fa96e0dc70125/feedparser_rs-0.7.2-cp314-cp314-win_amd64.whl", hash = "sha256:6011a2172baa2580f4d4c00b5d3546c8902ddf1375b8ab4210ce4e4d4d3b81d4", size = 3085088, upload-time = "2026-11-01T10:51:26.401Z" },
+    { url = "https://files.pythonhosted.org/packages/10/d6/7d6d1e08e3995ac8e9718e7b18d872993a3e7a191ed9711fb89948846fd9/feedparser_rs-0.7.2-cp315-cp315-macosx_10_12_x86_64.whl", hash = "sha256:343b0815b2b230e1b952f971c5e3450027a4fc9f35110e84147256fb590b25e1", size = 3240745, upload-time = "2026-11-01T10:51:28.692Z" },
+    { url = "https://files.pythonhosted.org/packages/a1/04/207ba0a1a766e07b889df869f983c12c9b3e9e718921045e5638ed28ecfe/feedparser_rs-0.7.2-cp315-cp315-macosx_11_0_arm64.whl", hash = "sha256:3bfc6602d662c4a6e820ffe72ee8a31c9ad29af83ffd87b2e7e985b202e78e68", size = 3073507, upload-time = "2026-11-01T10:51:30.537Z" },
+    { url = "https://files.pythonhosted.org/packages/cd/de/7a3b523f2df6c89eb1ee6a44f3770b2d21797e613f13178281240605b596/feedparser_rs-0.7.2-cp315-cp315-win_amd64.whl", hash = "sha256:4215071c216f95945aea8a8473e6e61431e8b803b914d57f8faeb977dc8c8a89", size = 3085245, upload-time = "2026-11-01T10:51:32.343Z" },
+]
